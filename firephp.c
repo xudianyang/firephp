@@ -31,6 +31,9 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(firephp)
 
+
+/** {{{ zend_bool firephp_detect_client(TSRMLS_D)
+*/
 zend_bool firephp_detect_client(TSRMLS_D)
 {
 	zval *http_user_agent;
@@ -41,7 +44,10 @@ zend_bool firephp_detect_client(TSRMLS_D)
 		return false;
 	}
 }
+/* }}} */
 
+/** {{{ zend_bool firephp_check_headers_send(TSRMLS_D)
+*/
 zend_bool firephp_check_headers_send(TSRMLS_D)
 {
 	const char *file = "";
@@ -61,7 +67,10 @@ zend_bool firephp_check_headers_send(TSRMLS_D)
 		return true;
 	}
 }
+/* }}} */
 
+/** {{{ zval * firephp_request_query(uint type, char * name, uint len TSRMLS_DC)
+*/
 zval * firephp_request_query(uint type, char * name, uint len TSRMLS_DC) {
 	zval 		**carrier = NULL, **ret;
 
@@ -122,7 +131,10 @@ zval * firephp_request_query(uint type, char * name, uint len TSRMLS_DC) {
 	Z_ADDREF_P(*ret);
 	return *ret;
 }
+/* }}} */
 
+/** {{{ void firephp_encode_array(zval *format_array, zval **carrier TSRMLS_DC)
+*/
 void firephp_encode_array(zval *format_array, zval **carrier TSRMLS_DC)
 {
 	zval **arg, *element = NULL;
@@ -164,7 +176,10 @@ void firephp_encode_array(zval *format_array, zval **carrier TSRMLS_DC)
 		}
 	} while(0);
 }
+/* }}} */
 
+/** {{{ void firephp_encode_object(zval *format_object, zval **carrier TSRMLS_DC)
+*/
 void firephp_encode_object(zval *format_object, zval **carrier TSRMLS_DC)
 {
 	char *class_name, *carrier_key, *recursion_str;
@@ -233,7 +248,10 @@ void firephp_encode_object(zval *format_object, zval **carrier TSRMLS_DC)
 		}
 	} while(0);
 }
+/* }}} */
 
+/** {{{ zval * firephp_encode_data(zval *format_data TSRMLS_DC)
+*/
 zval * firephp_encode_data(zval *format_data TSRMLS_DC)
 {
 	zval *carrier, z_tmp;
@@ -279,7 +297,10 @@ zval * firephp_encode_data(zval *format_data TSRMLS_DC)
 
 	return carrier;
 }
+/* }}} */
 
+/** {{{ void firephp_set_header(char *header TSRMLS_DC)
+*/
 void firephp_set_header(char *header TSRMLS_DC)
 {
 	sapi_header_line ctr = {0};
@@ -287,19 +308,28 @@ void firephp_set_header(char *header TSRMLS_DC)
 	ctr.line_len = strlen(header);
 	sapi_header_op(SAPI_HEADER_REPLACE, &ctr TSRMLS_CC);
 }
+/* }}} */
 
+/** {{{ void firephp_init_object_handle_ht(TSRMLS_D)
+*/
 void firephp_init_object_handle_ht(TSRMLS_D)
 {
     ALLOC_HASHTABLE(FIREPHP_G(object_handle_ht));
     if (zend_hash_init(FIREPHP_G(object_handle_ht), 0, NULL, ZVAL_PTR_DTOR, 0) == FAILURE)
         FREE_HASHTABLE(FIREPHP_G(object_handle_ht));
 }
+/* }}} */
 
+/** {{{ void firephp_clean_object_handle_ht(TSRMLS_D)
+*/
 void firephp_clean_object_handle_ht(TSRMLS_D)
 {
 	FREE_HASHTABLE(FIREPHP_G(object_handle_ht));
 }
+/* }}} */
 
+/** {{{ zval * firephp_split_str_to_array(char *format_str, zend_uint max_len TSRMLS_DC)
+*/
 zval * firephp_split_str_to_array(char *format_str, zend_uint max_len TSRMLS_DC)
 {
 	zval *carrier;
@@ -342,7 +372,10 @@ zval * firephp_split_str_to_array(char *format_str, zend_uint max_len TSRMLS_DC)
 
 	return carrier;
 }
+/* }}} */
 
+/** {{{ char * firephp_json_encode(zval *data TSRMLS_DC)
+*/
 char * firephp_json_encode(zval *data TSRMLS_DC)
 {
 	zval *function, *ret = NULL, **params[1];
@@ -374,7 +407,10 @@ char * firephp_json_encode(zval *data TSRMLS_DC)
 
 	return json_data;
 }
+/* }}} */
 
+/** {{{ void firephp_output_headers(zval *data, int header_total_len TSRMLS_DC)
+*/
 void firephp_output_headers(zval *data, int header_total_len TSRMLS_DC)
 {
 	zval **elem;
@@ -411,7 +447,10 @@ void firephp_output_headers(zval *data, int header_total_len TSRMLS_DC)
 	firephp_set_header(header TSRMLS_CC);
 	efree(header);
 }
+/* }}} */
 
+/** {{{ proto console(mixed $data);
+*/
 ZEND_FUNCTION(console)
 {
 	zval *arg, *format_data, *format_meta, *split_array;
