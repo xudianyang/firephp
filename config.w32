@@ -1,0 +1,8 @@
+ARG_ENABLE("firephp", "enable firephp support", "no");
+
+if (PHP_FIREPHP == "yes") {
+
+	EXTENSION("firephp", "firephp.c");
+
+    AC_DEFINE("HAVE_FIREPHP", 1, "Have FirePHP Support");
+}
