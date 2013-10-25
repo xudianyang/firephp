@@ -24,13 +24,9 @@ A PHP extension for php-console.This is a C-implement of FirePHP.But now only im
 
 ### Compile firephp in Linux/Unix
 ===========
-
-
 	$/path/to/phpize
 	$./configure --with-php-config=/path/to/php-config
 	$make && make install
-
-
 ### For windows
 ===============
 
@@ -50,12 +46,13 @@ Chinese Simplified documentation [PHP扩展之firephp console](http://www.phpboy
 ## Usage
 ===========
 
-	<?php
-		$arr = array(
-    		'key1' => 'php',
-  			'key2' => 'boy',
-		);
-		$e1 = new Exception("test firephp php extension", 110);
-		console($GLOBALS);
-	?>
-	
+```php
+<?php
+	$arr = array(
+		'key1' => 'php',
+  		'key2' => 'boy',
+	);
+	$e1 = new Exception("test firephp php extension", 110);
+	console($GLOBALS);
+?>
+```
