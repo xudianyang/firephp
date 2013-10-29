@@ -172,7 +172,7 @@ void firephp_encode_array(zval *format_array, zval **carrier TSRMLS_DC)
 */
 void firephp_encode_object(zval *format_object, zval **carrier TSRMLS_DC)
 {
-	char *class_name, *carrier_key, *recursion_str;
+	char *class_name, *carrier_key, *recursion_str, *none_value;
 	zend_property_info *property_info;
 	zval *prop_value, *element;
 	zend_object_handle current_obj_h;
@@ -210,7 +210,15 @@ void firephp_encode_object(zval *format_object, zval **carrier TSRMLS_DC)
 				if (property_info->flags & ZEND_ACC_STATIC) {
 					spprintf(&carrier_key, 0, "static:%s", key);
 #if ((PHP_MAJOR_VERSION == 5) && (PHP_MINOR_VERSION > 3)) || (PHP_MAJOR_VERSION > 5)
-					*prop_value = *ce->static_members_table[property_info->offset];
+					zend_update_class_constants(ce TSRMLS_CC);
+					if (CE_STATIC_MEMBERS(ce)[property_info->offset] && (property_info->flags & ZEND_ACC_PUBLIC)) {
+						*prop_value = *CE_STATIC_MEMBERS(ce)[property_info->offset];
+					} else {
+						spprintf(&none_value, 0, "** You Can't Get %s's Value **", carrier_key);
+						add_assoc_string(*carrier, carrier_key, none_value, 1);
+						efree(none_value);
+						continue;
+					}
 #else
 					zval **member;
 					zend_hash_find(ce->static_members, key, strlen(key) + 1, (void **) &member);
