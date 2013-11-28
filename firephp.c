@@ -257,10 +257,17 @@ zval * firephp_encode_data(zval *format_data TSRMLS_DC)
 
 	do {
 		switch (Z_TYPE_P(format_data)) {
-			case IS_BOOL:
+			case IS_BOOL:{
+				MAKE_STD_ZVAL(carrier);
+				if (!Z_BVAL_P(format_data)) {
+					ZVAL_STRING(carrier, "false", 1);
+				} else {
+					ZVAL_STRING(carrier, "true", 1);
+				}
+				break;
+			}
 			case IS_LONG:
-			case IS_DOUBLE:
-			case IS_NULL: {
+			case IS_DOUBLE:{
 				MAKE_STD_ZVAL(carrier);
 				z_tmp = *format_data;
 				zval_copy_ctor(&z_tmp);
@@ -268,6 +275,11 @@ zval * firephp_encode_data(zval *format_data TSRMLS_DC)
 				convert_to_string(&z_tmp);
 				ZVAL_STRING(carrier, Z_STRVAL(z_tmp), 1);
 				zval_dtor(&z_tmp);
+				break;
+			}
+			case IS_NULL: {
+				MAKE_STD_ZVAL(carrier);
+				ZVAL_STRING(carrier, "NULL", 1);
 				break;
 			}
 			case IS_RESOURCE: {
@@ -279,7 +291,11 @@ zval * firephp_encode_data(zval *format_data TSRMLS_DC)
 			}
 			case IS_STRING: {
 				MAKE_STD_ZVAL(carrier);
-				ZVAL_STRING(carrier, Z_STRVAL_P(format_data), 1);
+				if (Z_STRLEN_P(format_data) == 0) {
+					ZVAL_STRING(carrier, "** Empty String **", 1);
+				} else {
+					ZVAL_STRING(carrier, Z_STRVAL_P(format_data), 1);
+				}
 				break;
 			}
 			case IS_ARRAY: {
