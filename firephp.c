@@ -16,8 +16,7 @@
 #include "Zend/zend_alloc.h"
 #include "ext/standard/info.h"
 #include "ext/standard/head.h"
-#include "ext/standard/php_smart_str.h"
-#include "firephp.h"
+#include "php_firephp.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(firephp)
 
@@ -329,8 +328,9 @@ void firephp_set_header(char *header TSRMLS_DC)
 void firephp_init_object_handle_ht(TSRMLS_D)
 {
     ALLOC_HASHTABLE(FIREPHP_G(object_handle_ht));
-    if (zend_hash_init(FIREPHP_G(object_handle_ht), 0, NULL, ZVAL_PTR_DTOR, 0) == FAILURE)
-        FREE_HASHTABLE(FIREPHP_G(object_handle_ht));
+    if (zend_hash_init(FIREPHP_G(object_handle_ht), 0, NULL, NULL, 0) == FAILURE) {
+    	FREE_HASHTABLE(FIREPHP_G(object_handle_ht));
+    }
 }
 /* }}} */
 
@@ -338,6 +338,7 @@ void firephp_init_object_handle_ht(TSRMLS_D)
 */
 void firephp_clean_object_handle_ht(TSRMLS_D)
 {
+	zend_hash_destroy(FIREPHP_G(object_handle_ht));
 	FREE_HASHTABLE(FIREPHP_G(object_handle_ht));
 }
 /* }}} */
