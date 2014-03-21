@@ -30,7 +30,7 @@ extern zend_module_entry firephp_module_entry;
 #define false 0
 #endif
 
-#define FIREPHP_VERSION					"1.0.4"
+#define FIREPHP_VERSION					"1.0.5"
 #define FIREPHP_HEADER_MAX_LEN			5000
 #define FIREPHP_SUPPORT_URL				"http://www.phpboy.net/"
 #define FIREPHP_PLUGIN_HEADER			"X-Wf-1-Plugin-1: http://meta.firephp.org/Wildfire/Plugin/FirePHP/Library-FirePHPCore/0.2.1"
@@ -62,6 +62,7 @@ ZEND_BEGIN_MODULE_GLOBALS(firephp)
 
    HashTable *object_handle_ht;
    int message_index;
+   double microtime;
 
 ZEND_END_MODULE_GLOBALS(firephp)
 

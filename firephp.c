@@ -422,6 +422,42 @@ char * firephp_json_encode(zval *data TSRMLS_DC)
 
 	return json_data;
 }
+
+double firephp_microtime(TSRMLS_D)
+{
+	zval *function, *ret = NULL, **params[1], *param;
+	double microtime;
+
+	MAKE_STD_ZVAL(function);
+	MAKE_STD_ZVAL(param);
+	ZVAL_TRUE(param);
+	params[0] = &param;
+	ZVAL_STRING(function, "microtime", 0);
+
+	zend_fcall_info fci = {
+		sizeof(fci),
+		EG(function_table),
+		function,
+		NULL,
+		&ret,
+		1,
+		(zval ***)params,
+		NULL,
+		1
+	};
+
+	if (zend_call_function(&fci, NULL TSRMLS_CC) == FAILURE) {
+		if (ret) {
+			zval_ptr_dtor(&ret);
+		}
+		efree(function);
+	} else {
+		microtime = Z_DVAL_P(ret);
+	}
+	efree(param);
+
+	return microtime;
+}
 /* }}} */
 
 /** {{{ void firephp_output_headers(zval *data, int header_total_len TSRMLS_DC)
@@ -469,18 +505,35 @@ void firephp_output_headers(zval *data, int header_total_len TSRMLS_DC)
 ZEND_FUNCTION(console)
 {
 	zval *arg, *format_data, *format_meta, *split_array;
-	char *format_str, *format_data_json, *format_meta_json;
+	char *format_str, *format_data_json, *format_meta_json, *lable_str;
 	int header_total_len;
+	double microtime, pass_time = 0;
+	zend_bool lable = false;
 
 	firephp_init_object_handle_ht(TSRMLS_C);
 	do {
 		if (!firephp_detect_client(TSRMLS_C)) break;
 		if (!firephp_check_headers_send(TSRMLS_C)) break;
-		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z", &arg) == FAILURE) break;
+		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|b", &arg, &lable) == FAILURE) break;
+
+		microtime = firephp_microtime(TSRMLS_C);
+		if (FIREPHP_G(microtime)) {
+			pass_time = microtime - FIREPHP_G(microtime);
+		}
+		FIREPHP_G(microtime) = microtime;
+		if (pass_time > 0) {
+			spprintf(&lable_str, 0, "%09.5fs", pass_time);
+		} else {
+			spprintf(&lable_str, 0, "%09.5fs", microtime);
+		}
 
 		MAKE_STD_ZVAL(format_meta);
 		array_init(format_meta);
 		add_assoc_string(format_meta, "Type", "INFO", 1);
+		if (lable) {
+			add_assoc_string(format_meta, "Label", lable_str, 1);
+			efree(lable_str);
+		}
 		format_data = firephp_encode_data(arg TSRMLS_CC);
 		format_data_json = firephp_json_encode(format_data TSRMLS_CC);
 		format_meta_json = firephp_json_encode(format_meta TSRMLS_CC);
@@ -560,6 +613,7 @@ PHP_GINIT_FUNCTION(firephp)
 {
 	firephp_globals->object_handle_ht = NULL;
 	firephp_globals->message_index    = 1;
+	firephp_globals->microtime		  = 0;
 }
 /* }}} */
 
