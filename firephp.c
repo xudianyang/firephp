@@ -517,15 +517,15 @@ ZEND_FUNCTION(console)
 		if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|b", &arg, &lable) == FAILURE) break;
 
 		microtime = firephp_microtime(TSRMLS_C);
-		if (FIREPHP_G(microtime)) {
-			pass_time = microtime - FIREPHP_G(microtime);
+		if (lable) {
+			if (FIREPHP_G(microtime) > 0) {
+				pass_time = microtime - FIREPHP_G(microtime);
+				spprintf(&lable_str, 0, "%09.5fs", pass_time);
+			} else {
+				spprintf(&lable_str, 0, "%09.5fs", microtime);
+			}
 		}
 		FIREPHP_G(microtime) = microtime;
-		if (pass_time > 0) {
-			spprintf(&lable_str, 0, "%09.5fs", pass_time);
-		} else {
-			spprintf(&lable_str, 0, "%09.5fs", microtime);
-		}
 
 		MAKE_STD_ZVAL(format_meta);
 		array_init(format_meta);
