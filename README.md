@@ -48,5 +48,7 @@ Chinese Simplified documentation [PHP扩展之firephp console](http://www.phpboy
 	);
 	$e1 = new Exception("test firephp php extension", 110);
 	console($GLOBALS);
+	sleep(1);
+	console('xdy', true);
 ?>
 ```
