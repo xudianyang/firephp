@@ -369,7 +369,7 @@ zval * firephp_split_str_to_array(char *format_str, zend_uint max_len TSRMLS_DC)
 	*q = *p;
 	q++;
 	p++;
-	while(*p) {
+	while (*p != '\0') {
 		if ((p - format_str) % max_len == 0) {
 			*q = '\0';
 			add_next_index_string(carrier, elem, 1);
@@ -583,6 +583,8 @@ PHP_RINIT_FUNCTION(firephp)
 */
 PHP_RSHUTDOWN_FUNCTION(firephp)
 {
+	FIREPHP_G(message_index) = 1;
+	FIREPHP_G(microtime)	 = 0;
     return SUCCESS;
 }
 /* }}} */
